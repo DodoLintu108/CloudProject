@@ -1,18 +1,14 @@
-// index.js or App.js
 import { Amplify } from 'aws-amplify';
-import { awsConfig } from './aws-config';
+import awsConfig from './awsConfig';
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ConfirmEmailForm from './confirm';
+import Tasks from './Tasks';
 
 import SignInForm from './login';
 import SignUpForm from './signup';
 
-Amplify.configure({
-  Auth: {
-    ...awsConfig,
-  },
-});
+Amplify.configure(awsConfig);
 
 function App() {
   return (
@@ -21,6 +17,7 @@ function App() {
         <Route path="/" element={<SignInForm />} />
         <Route path="/signup" element={<SignUpForm />} />
         <Route path="/confirm" element={<ConfirmEmailForm />} /> 
+        <Route path="/tasks" element={<Tasks />} />
       </Routes>
     </BrowserRouter>
   );
