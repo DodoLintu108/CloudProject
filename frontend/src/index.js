@@ -1,14 +1,15 @@
 // frontend/src/index.js
 
-// **This sets up** Amplify’s internal OAuth listener (loginWith)
-import 'aws-amplify/auth/enable-oauth-listener';
-
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { Amplify } from 'aws-amplify';
 import awsConfig from './awsConfig';
+
 import App from './App';
+import './index.css';
 
 Amplify.configure(awsConfig);
-
-ReactDOM.render(<App />, document.getElementById('root'));
+// Create and render root with ReactDOM client API
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<App />);

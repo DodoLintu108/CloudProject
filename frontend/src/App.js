@@ -1,16 +1,29 @@
+// index.js or App.js
+import { Amplify } from 'aws-amplify';
+import { awsConfig } from './aws-config';
 import React from 'react';
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ConfirmEmailForm from './confirm';
 
-export default function App() {
+import SignInForm from './login';
+import SignUpForm from './signup';
+
+Amplify.configure({
+  Auth: {
+    ...awsConfig,
+  },
+});
+
+function App() {
   return (
-    <Authenticator>
-      {({ signOut, user }) => (
-        <main style={{ padding: 20 }}>
-          <h1>Welcome, {user.username}!</h1>
-          <button onClick={signOut}>Sign Out</button>
-        </main>
-      )}
-    </Authenticator>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SignInForm />} />
+        <Route path="/signup" element={<SignUpForm />} />
+        <Route path="/confirm" element={<ConfirmEmailForm />} /> 
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
