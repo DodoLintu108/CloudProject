@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import { Amplify } from 'aws-amplify';
 import awsConfig from './awsConfig';
 import App from './App';
+import '@aws-amplify/ui-react/styles.css';
 
 Amplify.configure(awsConfig);
-
 ReactDOM.render(<App />, document.getElementById('root'));

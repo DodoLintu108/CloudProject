@@ -3,7 +3,7 @@ export default {
   Auth: {
     region:             process.env.REACT_APP_AWS_REGION,
     userPoolId:         process.env.REACT_APP_COGNITO_USER_POOL_ID,
-    userPoolClientId:   process.env.REACT_APP_COGNITO_CLIENT_ID,    // ← renamed
+    userPoolWebClientId: process.env.REACT_APP_COGNITO_CLIENT_ID,
     oauth: {
       domain:          process.env.REACT_APP_COGNITO_DOMAIN,
       scope:           ['openid', 'email'],
