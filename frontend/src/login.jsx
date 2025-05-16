@@ -12,9 +12,9 @@ export default function SignInForm() {
     e.preventDefault();
     setError('');
     try {
-      const user = await Auth.signIn(username, password);
-      console.log('Signed in:', user);
-      alert('Signed in successfully!');
+      await Auth.signIn(username, password);
+      // on successful login, redirect to tasks screen
+      navigate('/tasks');
     } catch (err) {
       console.error(err);
       setError(err.message || 'Login failed.');
