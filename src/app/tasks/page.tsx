@@ -167,13 +167,13 @@
              value={newTitle}
              onChange={e => setNewTitle(e.target.value)}
              placeholder="New task title"
-             className="flex-1 p-2 border border-gray-500 rounded placeholder-gray-700 text-gray-800"
+             className="flex-1 p-2 border border-gray-500 rounded placeholder-gray-600 text-gray-900"
              required
            />
            <select
              value={newStatus}
              onChange={e => setNewStatus(e.target.value)}
-             className={`p-2 border border-gray-300 rounded ${statusClasses[newStatus] || 'bg-white text-gray-800'}`}
+             className={`p-2 border border-gray-300 rounded ${statusClasses[newStatus] || 'bg-white text-gray-900'}`}
            >
              <option value="to do">To Do</option>
              <option value="code review">Code Review</option>
@@ -193,14 +193,14 @@
              {tasks.map(task => (
                <div key={task.taskId} className="bg-gray-100 rounded-md p-4 flex flex-col space-y-2">
                  <div>
-                   <h3 className="text-lg font-medium text-gray-800">{task.title}</h3>
-                   <p className="text-sm text-gray-700">Created: {new Date(task.createdAt).toLocaleString()}</p>
+                   <h3 className="text-lg font-medium text-gray-900">{task.title}</h3>
+                   <p className="text-sm text-gray-900">Created: {new Date(task.createdAt).toLocaleString()}</p>
                  </div>
                  <div className="flex items-center space-x-2">
                    <select
                      value={task.status}
                      onChange={e => handleStatusChange(task.taskId, e.target.value)}
-                     className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${statusClasses[task.status] || 'bg-gray-100 text-gray-800'}`}
+                     className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${statusClasses[task.status] || 'bg-gray-100 text-gray-900'}`}
                    >
                      <option value="to do">To Do</option>
                      <option value="code review">Code Review</option>
@@ -247,7 +247,7 @@
              ))}
            </div>
          ) : (
-           <p className="text-center text-gray-700">No tasks available</p>
+           <p className="text-center text-gray-900">No tasks available</p>
          )}
          <p className="mt-6 text-center">
            <Link href="/" className="text-[#FF9900] hover:underline">
