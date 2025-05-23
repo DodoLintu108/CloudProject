@@ -43,3 +43,30 @@ export async function POST(request: Request, { params }: { params: { id: string 
     .promise();
   return NextResponse.json({ url }, { status: 201 });
 }
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const { id } = params;
+  const { url } = await request.json();
+  // Derive S3 object key from URL
+  const key = new URL(url).pathname.slice(1);
+  await s3.deleteObject({ Bucket: awsConfig.attachmentsBucket, Key: key }).promise();
+  // Fetch current attachments
+  const { Item } = await dynamoDb
+    .get({
+      TableName: awsConfig.tasksTable,
+      Key: { userId: 'test-user-1', taskId: id },
+      ProjectionExpression: 'attachments',
+    })
+    .promise();
+  const attachments: string[] = Item?.attachments || [];
+  const newAttachments = attachments.filter(a => a !== url);
+  await dynamoDb
+    .update({
+      TableName: awsConfig.tasksTable,
+      Key: { userId: 'test-user-1', taskId: id },
+      UpdateExpression: 'SET attachments = :attachments',
+      ExpressionAttributeValues: { ':attachments': newAttachments },
+    })
+    .promise();
+  return NextResponse.json({ attachments: newAttachments });
+}

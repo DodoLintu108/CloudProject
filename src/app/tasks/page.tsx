@@ -18,8 +18,18 @@
    const [tasks, setTasks] = useState<Task[]>([]);
    const [newTitle, setNewTitle] = useState('');
    const [newStatus, setNewStatus] = useState('to do');
-
-   const statusClasses: Record<string, string> = {
+  
+   // Notification system
+   const [notifications, setNotifications] = useState<{id: string; message: string; type: 'info'|'success'|'error'}[]>([]);
+   const addNotification = (message: string, type: 'info'|'success'|'error') => {
+     const id = crypto.randomUUID();
+     setNotifications(prev => [...prev, {id, message, type}]);
+   };
+   const removeNotification = (id: string) => {
+     setNotifications(prev => prev.filter(n => n.id !== id));
+   };
+    
+    const statusClasses: Record<string, string> = {
      'done': 'bg-green-100 text-green-800',
      'to do': 'bg-blue-100 text-blue-800',
      'code review': 'bg-indigo-100 text-indigo-800',
@@ -35,6 +45,7 @@
  
    async function handleAddTask(e: React.FormEvent) {
      e.preventDefault();
+     addNotification('Adding task...', 'info');
      const title = newTitle.trim();
      if (!title) return;
      const newTask: Task = {
@@ -52,14 +63,17 @@
      });
      if (res.ok) {
        setTasks(prev => [...prev, newTask]);
+       addNotification('Task added successfully', 'success');
        setNewTitle('');
        setNewStatus('to do');
      } else {
+       addNotification('Failed to add task', 'error');
        console.error('Failed to add task');
      }
    }
  
    async function handleDeleteTask(taskId: string) {
+     addNotification('Deleting task...', 'info');
      const res = await fetch('/api/tasks', {
        method: 'DELETE',
        headers: {'Content-Type': 'application/json'},
@@ -67,13 +81,16 @@
      });
      if (res.ok) {
        setTasks(prev => prev.filter(task => task.taskId !== taskId));
+       addNotification('Task deleted', 'success');
      } else {
+       addNotification('Failed to delete task', 'error');
        console.error('Failed to delete task');
      }
    }
 
    // New handler to update task status
    async function handleStatusChange(taskId: string, status: string) {
+     addNotification('Updating status...', 'info');
      const res = await fetch('/api/tasks', {
        method: 'PUT',
        headers: {'Content-Type': 'application/json'},
@@ -82,7 +99,9 @@
      if (res.ok) {
        const updated = await res.json();
        setTasks(prev => prev.map(t => t.taskId === taskId ? {...t, status: updated.status, updatedAt: updated.updatedAt} : t));
+       addNotification('Status updated', 'success');
      } else {
+       addNotification('Failed to update status', 'error');
        console.error('Failed to update status');
      }
    }
@@ -91,6 +110,7 @@
    async function handleUploadAttachment(taskId: string, file: File) {
      const formData = new FormData();
      formData.append('file', file);
+     addNotification('Uploading attachment...', 'info');
      const res = await fetch(`/api/tasks/${taskId}/attachments`, {
        method: 'POST',
        body: formData,
@@ -100,13 +120,44 @@
        setTasks(prev => prev.map(t =>
          t.taskId === taskId ? { ...t, attachments: [...(t.attachments || []), url] } : t
        ));
+       addNotification('Attachment uploaded', 'success');
      } else {
+       addNotification('Failed to upload attachment', 'error');
        console.error('Failed to upload attachment');
      }
    }
 
+   // Handler to remove attachment
+   async function handleRemoveAttachment(taskId: string, url: string) {
+     addNotification('Removing attachment...', 'info');
+     const res = await fetch(`/api/tasks/${taskId}/attachments`, {
+       method: 'DELETE',
+       headers: {'Content-Type': 'application/json'},
+       body: JSON.stringify({ url }),
+     });
+     if (res.ok) {
+       const { attachments } = await res.json();
+       setTasks(prev => prev.map(t => t.taskId === taskId ? { ...t, attachments } : t));
+       addNotification('Attachment removed', 'success');
+     } else {
+       addNotification('Failed to remove attachment', 'error');
+       console.error('Failed to remove attachment');
+     }
+   }
+
    return (
-     <main className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#232F3E] to-[#121417]">
+     <> 
+      {/* Notification container */}
+      <div className="fixed top-4 right-4 space-y-2 z-50">
+        {notifications.map(n => (
+          <div key={n.id} onClick={() => removeNotification(n.id)}
+               className={`cursor-pointer p-3 rounded shadow-lg animate-slide-in-right max-w-xs text-sm text-white ${n.type === 'success' ? 'bg-green-600' : n.type === 'error' ? 'bg-red-600' : 'bg-blue-600'}`}
+          >
+            {n.message}
+          </div>
+        ))}
+      </div>
+       <main className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#232F3E] to-[#121417]">
        <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8 border-2 border-[#FF9900]">
          <Image src="/AWS_LOGO.png" alt="AWS Logo" width={48} height={48} className="mx-auto mb-6" />
          <h1 className="text-3xl font-bold text-center text-[#232F3E] mb-6">Your Tasks</h1>
@@ -116,7 +167,7 @@
              value={newTitle}
              onChange={e => setNewTitle(e.target.value)}
              placeholder="New task title"
-             className="flex-1 p-2 border border-gray-300 rounded placeholder-gray-500 text-gray-800"
+             className="flex-1 p-2 border border-gray-500 rounded placeholder-gray-700 text-gray-800"
              required
            />
            <select
@@ -143,7 +194,7 @@
                <div key={task.taskId} className="bg-gray-100 rounded-md p-4 flex flex-col space-y-2">
                  <div>
                    <h3 className="text-lg font-medium text-gray-800">{task.title}</h3>
-                   <p className="text-sm text-gray-500">Created: {new Date(task.createdAt).toLocaleString()}</p>
+                   <p className="text-sm text-gray-700">Created: {new Date(task.createdAt).toLocaleString()}</p>
                  </div>
                  <div className="flex items-center space-x-2">
                    <select
@@ -162,13 +213,16 @@
                  {/* Display attachments if any */}
                  {task.attachments && task.attachments.length > 0 && (
                    <div>
-                     <p className="text-sm text-gray-600 font-medium">Attachments:</p>
+                     <p className="text-sm text-gray-900 font-medium">Attachments:</p>
                      <ul className="list-disc list-inside text-sm">
                        {task.attachments.map((url, idx) => (
-                         <li key={idx}>
+                         <li key={idx} className="flex items-center justify-between">
                            <a href={url} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
                              Attachment {idx + 1}
                            </a>
+                           <button onClick={() => handleRemoveAttachment(task.taskId, url)} className="text-red-500 hover:text-red-700 ml-2">
+                             &times;
+                           </button>
                          </li>
                        ))}
                      </ul>
@@ -193,14 +247,15 @@
              ))}
            </div>
          ) : (
-           <p className="text-center text-gray-300">No tasks available</p>
+           <p className="text-center text-gray-700">No tasks available</p>
          )}
          <p className="mt-6 text-center">
            <Link href="/" className="text-[#FF9900] hover:underline">
-             Back to Dashboard
+             Logged into the wrong account? Click here to go back.
            </Link>
          </p>
        </div>
      </main>
+     </>
    );
  }
