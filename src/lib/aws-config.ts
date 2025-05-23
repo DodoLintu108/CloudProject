@@ -1,5 +1,5 @@
 // src/lib/aws-config.ts
-import { config, DynamoDB, CognitoIdentityServiceProvider } from 'aws-sdk';
+import { config, DynamoDB, CognitoIdentityServiceProvider, S3 } from 'aws-sdk';
 import crypto from 'crypto';
 
 export interface AwsConfig {
@@ -8,6 +8,7 @@ export interface AwsConfig {
   userPoolClientId: string;
   userPoolClientSecret?: string;
   tasksTable: string;
+  attachmentsBucket: string;
 }
 
 export const awsConfig: AwsConfig = {
@@ -16,6 +17,7 @@ export const awsConfig: AwsConfig = {
   userPoolClientId: process.env.COGNITO_CLIENT_ID!,
   userPoolClientSecret: process.env.COGNITO_CLIENT_SECRET,  // only if your client has a secret
   tasksTable: process.env.TASKS_TABLE!,
+  attachmentsBucket: process.env.ATTACHMENTS_BUCKET!,
 };
 
 // 1) Initialize the AWS SDK globally with region & credentials
@@ -30,6 +32,7 @@ config.update({
 // 2) Export your DynamoDB and Cognito clients
 export const dynamoDb = new DynamoDB.DocumentClient();
 export const cognitoISP = new CognitoIdentityServiceProvider();
+export const s3 = new S3();
 
 /**
  * If you have a Cognito client secret, compute the SECRET_HASH

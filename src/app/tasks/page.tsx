@@ -11,6 +11,7 @@
    status: string;
    title: string;
    updatedAt: string;
+   attachments?: string[];
  }
  
  export default function TasksPage() {
@@ -86,6 +87,24 @@
      }
    }
 
+   // Handler to upload attachment
+   async function handleUploadAttachment(taskId: string, file: File) {
+     const formData = new FormData();
+     formData.append('file', file);
+     const res = await fetch(`/api/tasks/${taskId}/attachments`, {
+       method: 'POST',
+       body: formData,
+     });
+     if (res.ok) {
+       const { url } = await res.json();
+       setTasks(prev => prev.map(t =>
+         t.taskId === taskId ? { ...t, attachments: [...(t.attachments || []), url] } : t
+       ));
+     } else {
+       console.error('Failed to upload attachment');
+     }
+   }
+
    return (
      <main className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#232F3E] to-[#121417]">
        <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8 border-2 border-[#FF9900]">
@@ -121,7 +140,7 @@
          {tasks.length > 0 ? (
            <div className="space-y-4">
              {tasks.map(task => (
-               <div key={task.taskId} className="bg-gray-100 rounded-md p-4 flex items-center justify-between">
+               <div key={task.taskId} className="bg-gray-100 rounded-md p-4 flex flex-col space-y-2">
                  <div>
                    <h3 className="text-lg font-medium text-gray-800">{task.title}</h3>
                    <p className="text-sm text-gray-500">Created: {new Date(task.createdAt).toLocaleString()}</p>
@@ -140,6 +159,36 @@
                    </select>
                    <button onClick={() => handleDeleteTask(task.taskId)} className="text-red-500 hover:text-red-700">&times;</button>
                  </div>
+                 {/* Display attachments if any */}
+                 {task.attachments && task.attachments.length > 0 && (
+                   <div>
+                     <p className="text-sm text-gray-600 font-medium">Attachments:</p>
+                     <ul className="list-disc list-inside text-sm">
+                       {task.attachments.map((url, idx) => (
+                         <li key={idx}>
+                           <a href={url} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
+                             Attachment {idx + 1}
+                           </a>
+                         </li>
+                       ))}
+                     </ul>
+                   </div>
+                 )}
+                 {/* Form to upload a new attachment */}
+                 <form onSubmit={e => {
+                     e.preventDefault();
+                     const form = e.currentTarget as HTMLFormElement;
+                     const fileInput = form.elements.namedItem('file') as HTMLInputElement | null;
+                     if (fileInput?.files?.[0]) {
+                       handleUploadAttachment(task.taskId, fileInput.files[0]);
+                       form.reset();
+                     }
+                   }} className="flex items-center space-x-2">
+                   <input type="file" name="file" className="text-sm" />
+                   <button type="submit" className="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600">
+                     Upload
+                   </button>
+                 </form>
                </div>
              ))}
            </div>
