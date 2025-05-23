@@ -23,15 +23,16 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const key = `${id}/${Date.now()}_${file.name}`;
-  const uploadResult = await s3
-    .upload({
+  // Upload without ACL (bucket owner enforced) using putObject
+  await s3
+    .putObject({
       Bucket: awsConfig.attachmentsBucket,
       Key: key,
       Body: buffer,
       ContentType: file.type,
     })
     .promise();
-  const url = uploadResult.Location;
+  const url = `https://${awsConfig.attachmentsBucket}.s3.${awsConfig.region}.amazonaws.com/${key}`;
   await dynamoDb
     .update({
       TableName: awsConfig.tasksTable,
