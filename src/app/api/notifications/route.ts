@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { awsConfig } from '@/lib/aws-config';
 import { SQS } from 'aws-sdk';
 
 const sqsClient = new SQS();
