@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { awsConfig, s3, dynamoDb } from '@/lib/aws-config';
 
-export async function GET(request: Request, context: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
   const { Item } = await dynamoDb
     .get({
@@ -13,7 +13,7 @@ export async function GET(request: Request, context: { params: { id: string } })
   return NextResponse.json(Item?.attachments || []);
 }
 
-export async function POST(request: Request, context: { params: { id: string } }) {
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
   const formData = await request.formData();
   const file = formData.get('file') as File;
@@ -45,7 +45,7 @@ export async function POST(request: Request, context: { params: { id: string } }
 }
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   context: { params: { id: string } }
 ) {
   const { id } = context.params;
