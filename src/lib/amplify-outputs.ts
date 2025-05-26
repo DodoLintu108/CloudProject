@@ -11,6 +11,16 @@ export interface AmplifyOutputs {
   data?: {
     url?: string;
     aws_region?: string;
+    tables?: {
+      [key: string]: {
+        name: string;
+        arn: string;
+      };
+    };
+  };
+  storage?: {
+    aws_region?: string;
+    bucket_name?: string;
   };
 }
 

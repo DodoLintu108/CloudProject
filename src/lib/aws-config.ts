@@ -2,6 +2,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { S3Client } from '@aws-sdk/client-s3';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import crypto from 'crypto';
 import { getConfigValue } from './config-helper';
@@ -61,6 +62,7 @@ const clientConfig = {
 const dynamoClient = new DynamoDBClient(clientConfig);
 export const dynamoDb = DynamoDBDocumentClient.from(dynamoClient);
 export const s3 = new S3Client(clientConfig);
+export const cognitoISP = new CognitoIdentityProvider(clientConfig);
 
 /**
  * If you have a Cognito client secret, compute the SECRET_HASH
@@ -73,7 +75,5 @@ export function makeSecretHash(username: string): string | undefined {
   return crypto
     .createHmac('SHA256', userPoolClientSecret)
     .update(username + userPoolClientId)
-    .digest('base64');
-}
     .digest('base64');
 }

@@ -19,31 +19,28 @@ export async function POST(request: Request) {
 
   try {
     switch (action) {
-      case 'signup':
-        await cognitoISP.signUp({
+      case 'signup':        await cognitoISP.signUp({
           ClientId: awsConfig.userPoolClientId,
           Username: username,
           Password: password,
           SecretHash: makeSecretHash(username),
           UserAttributes: [{ Name: 'email', Value: email }],
-        }).promise();
+        });
         return NextResponse.json({ message: 'Sign-up successful' }, { status: 201 });
 
       case 'confirm':
         // Compute secret hash if client has a secret
-        const confirmSecretHash = makeSecretHash(username);
-        await cognitoISP.confirmSignUp({
+        const confirmSecretHash = makeSecretHash(username);        await cognitoISP.confirmSignUp({
           ClientId: awsConfig.userPoolClientId,
           Username: username,
           ConfirmationCode: code,
           ...(confirmSecretHash && { SecretHash: confirmSecretHash }),
-        }).promise();
+        });
         return NextResponse.json({ message: 'Confirmation successful' });
 
       case 'signin':
         // Compute secret hash if client has a secret
-        const secretHash = makeSecretHash(username);
-        const auth = await cognitoISP.adminInitiateAuth({
+        const secretHash = makeSecretHash(username);        const auth = await cognitoISP.adminInitiateAuth({
           AuthFlow: 'ADMIN_USER_PASSWORD_AUTH',
           UserPoolId: awsConfig.userPoolId,
           ClientId: awsConfig.userPoolClientId,
@@ -52,7 +49,7 @@ export async function POST(request: Request) {
             PASSWORD: password,
             ...(secretHash && { SECRET_HASH: secretHash }),
           },
-        }).promise();
+        });
         return NextResponse.json(auth.AuthenticationResult);
 
       default:
