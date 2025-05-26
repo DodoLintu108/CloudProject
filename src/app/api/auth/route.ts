@@ -5,11 +5,16 @@ import { awsConfig, cognitoISP, makeSecretHash } from '@/lib/aws-config';
 export async function POST(request: Request) {
   const { action, username, password, email, code } = await request.json();
 
-  // Validate AWS configuration
-  if (!awsConfig.userPoolId || !awsConfig.userPoolClientId) {
+  // Validate AWS configuration - check for actual values, not placeholders
+  const isConfigValid = awsConfig.userPoolId && 
+    awsConfig.userPoolId !== 'us-east-1_PLACEHOLDER' && 
+    awsConfig.userPoolClientId && 
+    awsConfig.userPoolClientId !== 'PLACEHOLDER_CLIENT_ID';
+
+  if (!isConfigValid) {
     return NextResponse.json({ 
-      error: 'AWS Cognito configuration is missing. Please check environment variables.' 
-    }, { status: 500 });
+      error: 'AWS Cognito configuration is not properly set. Please ensure Amplify is deployed or environment variables are configured.' 
+    }, { status: 503 });
   }
 
   try {

@@ -2,6 +2,7 @@
 import { config, DynamoDB, CognitoIdentityServiceProvider, S3 } from 'aws-sdk';
 import crypto from 'crypto';
 import { getConfigValue } from './config-helper';
+import { amplifyOutputs } from './amplify-outputs';
 
 export interface AwsConfig {
   region: string;
@@ -13,9 +14,9 @@ export interface AwsConfig {
 }
 
 export const awsConfig: AwsConfig = {
-  region: process.env.AWS_REGION || process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1',
-  userPoolId: getConfigValue('COGNITO_USER_POOL_ID', 'userPoolId'),
-  userPoolClientId: getConfigValue('COGNITO_CLIENT_ID', 'userPoolClientId'),
+  region: amplifyOutputs?.auth?.aws_region || process.env.AWS_REGION || process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1',
+  userPoolId: amplifyOutputs?.auth?.user_pool_id || getConfigValue('COGNITO_USER_POOL_ID', 'userPoolId'),
+  userPoolClientId: amplifyOutputs?.auth?.user_pool_client_id || getConfigValue('COGNITO_CLIENT_ID', 'userPoolClientId'),
   userPoolClientSecret: getConfigValue('COGNITO_CLIENT_SECRET', 'userPoolClientSecret'),
   tasksTable: getConfigValue('TASKS_TABLE', 'tasksTable'),
   attachmentsBucket: getConfigValue('ATTACHMENTS_BUCKET', 'attachmentsBucket'),

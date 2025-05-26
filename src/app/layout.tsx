@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import './globals.css';
+import AmplifyProvider from '@/components/AmplifyProvider';
 
 export const metadata = {
   title: 'Task Manager',
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AmplifyProvider>
+          {children}
+        </AmplifyProvider>
+      </body>
     </html>
   );
 }
