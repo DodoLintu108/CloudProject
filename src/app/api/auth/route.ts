@@ -5,6 +5,14 @@ import { awsConfig, cognitoISP, makeSecretHash } from '@/lib/aws-config';
 export async function POST(request: Request) {
   const { action, username, password, email, code } = await request.json();
 
+  // Validate AWS configuration
+  if (!awsConfig.userPoolId || awsConfig.userPoolId === 'us-east-1_PLACEHOLDER' || 
+      !awsConfig.userPoolClientId || awsConfig.userPoolClientId === 'PLACEHOLDER_CLIENT_ID') {
+    return NextResponse.json({ 
+      error: 'AWS Cognito configuration is not properly set. Please configure environment variables or use Amplify outputs.' 
+    }, { status: 503 });
+  }
+
   try {
     switch (action) {
       case 'signup':

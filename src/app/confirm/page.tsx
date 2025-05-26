@@ -5,6 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic';
+
 function ConfirmForm() {
   const params = useSearchParams();
   const defaultUser = params.get('username') || '';

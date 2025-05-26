@@ -3,6 +3,9 @@
  import { useEffect, useState } from 'react';
  import Image from 'next/image';
  import Link from 'next/link';
+
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic';
  
  interface Task {
    userId: string;
