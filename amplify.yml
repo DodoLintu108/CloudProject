@@ -10,12 +10,6 @@ frontend:
         - npm ci
     build:
       commands:
-        - echo "Setting up environment variables for build..."
-        - export AWS_REGION=${AWS_REGION:-us-east-1}
-        - export COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID:-us-east-1_PLACEHOLDER}
-        - export COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID:-PLACEHOLDER_CLIENT_ID}
-        - export TASKS_TABLE=${TASKS_TABLE:-tasks-table}
-        - export ATTACHMENTS_BUCKET=${ATTACHMENTS_BUCKET:-attachments-bucket}
         - npm run build
   artifacts:
     baseDirectory: .next

@@ -6,11 +6,10 @@ export async function POST(request: Request) {
   const { action, username, password, email, code } = await request.json();
 
   // Validate AWS configuration
-  if (!awsConfig.userPoolId || awsConfig.userPoolId === 'us-east-1_PLACEHOLDER' || 
-      !awsConfig.userPoolClientId || awsConfig.userPoolClientId === 'PLACEHOLDER_CLIENT_ID') {
+  if (!awsConfig.userPoolId || !awsConfig.userPoolClientId) {
     return NextResponse.json({ 
-      error: 'AWS Cognito configuration is not properly set. Please configure environment variables or use Amplify outputs.' 
-    }, { status: 503 });
+      error: 'AWS Cognito configuration is missing. Please check environment variables.' 
+    }, { status: 500 });
   }
 
   try {

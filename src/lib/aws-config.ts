@@ -1,6 +1,7 @@
 // src/lib/aws-config.ts
 import { config, DynamoDB, CognitoIdentityServiceProvider, S3 } from 'aws-sdk';
 import crypto from 'crypto';
+import { getConfigValue } from './config-helper';
 
 export interface AwsConfig {
   region: string;
@@ -13,11 +14,11 @@ export interface AwsConfig {
 
 export const awsConfig: AwsConfig = {
   region: process.env.AWS_REGION || process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1',
-  userPoolId: process.env.COGNITO_USER_POOL_ID || process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || 'us-east-1_PLACEHOLDER',
-  userPoolClientId: process.env.COGNITO_CLIENT_ID || process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || 'PLACEHOLDER_CLIENT_ID',
-  userPoolClientSecret: process.env.COGNITO_CLIENT_SECRET,  // only if your client has a secret
-  tasksTable: process.env.TASKS_TABLE || process.env.NEXT_PUBLIC_TASKS_TABLE || 'tasks-table',
-  attachmentsBucket: process.env.ATTACHMENTS_BUCKET || process.env.NEXT_PUBLIC_ATTACHMENTS_BUCKET || 'attachments-bucket',
+  userPoolId: getConfigValue('COGNITO_USER_POOL_ID', 'userPoolId'),
+  userPoolClientId: getConfigValue('COGNITO_CLIENT_ID', 'userPoolClientId'),
+  userPoolClientSecret: getConfigValue('COGNITO_CLIENT_SECRET', 'userPoolClientSecret'),
+  tasksTable: getConfigValue('TASKS_TABLE', 'tasksTable'),
+  attachmentsBucket: getConfigValue('ATTACHMENTS_BUCKET', 'attachmentsBucket'),
 };
 
 // 1) Initialize the AWS SDK globally with region & credentials
@@ -25,8 +26,8 @@ if (awsConfig.region) {
   config.update({
     region: awsConfig.region,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'PLACEHOLDER_ACCESS_KEY',
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'PLACEHOLDER_SECRET_KEY',
+      accessKeyId: getConfigValue('AWS_ACCESS_KEY_ID', 'accessKeyId'),
+      secretAccessKey: getConfigValue('AWS_SECRET_ACCESS_KEY', 'secretAccessKey'),
     },
   });
 }
