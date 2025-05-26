@@ -3,9 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   output: 'standalone',
-  experimental: {
-    serverComponentsExternalPackages: ['aws-sdk']
-  }
+  serverExternalPackages: ['aws-sdk']
 };
 
 export default nextConfig;
