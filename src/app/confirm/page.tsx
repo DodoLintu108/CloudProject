@@ -1,11 +1,11 @@
 // src/app/confirm/page.tsx
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function ConfirmPage() {
+function ConfirmForm() {
   const params = useSearchParams();
   const defaultUser = params.get('username') || '';
   const [username, setUsername] = useState(defaultUser);
@@ -55,12 +55,19 @@ export default function ConfirmPage() {
           <button type="submit" className="w-full bg-[#FF9900] text-white py-2 rounded-md hover:bg-[#E69500] transition">
             Confirm
           </button>
-        </form>
-        {message && <p className="mt-4 text-center text-red-500">{message}</p>}
+        </form>        {message && <p className="mt-4 text-center text-red-500">{message}</p>}
         <p className="mt-4 text-center text-sm">
           Return to <Link href="/" className="text-[#FF9900] hover:underline">Sign In</Link>
         </p>
       </div>
     </main>
+  );
+}
+
+export default function ConfirmPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <ConfirmForm />
+    </Suspense>
   );
 }
