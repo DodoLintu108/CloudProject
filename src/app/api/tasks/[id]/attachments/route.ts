@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { awsConfig, s3, dynamoDb } from '@/lib/aws-config';
 
-export async function GET(request: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const { Item } = await dynamoDb
     .get({
       TableName: awsConfig.tasksTable,
@@ -13,8 +13,8 @@ export async function GET(request: NextRequest, context: { params: { id: string 
   return NextResponse.json(Item?.attachments || []);
 }
 
-export async function POST(request: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const formData = await request.formData();
   const file = formData.get('file') as File;
   if (!file) {
@@ -46,9 +46,9 @@ export async function POST(request: NextRequest, context: { params: { id: string
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const { id } = await context.params;
   const { url } = await request.json();
   // Derive S3 object key from URL
   const key = new URL(url).pathname.slice(1);
