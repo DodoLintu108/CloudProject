@@ -1,8 +1,6 @@
 // src/lib/amplify-outputs.ts
 // This file handles loading the Amplify outputs safely
 
-import amplifyOutputsJson from '../../amplify_outputs.json';
-
 export interface AmplifyOutputs {
   auth?: {
     user_pool_id?: string;
@@ -16,5 +14,16 @@ export interface AmplifyOutputs {
   };
 }
 
-// Export the loaded outputs
-export const amplifyOutputs: AmplifyOutputs = amplifyOutputsJson;
+// Load amplify outputs from the actual deployed configuration
+export const amplifyOutputs: AmplifyOutputs = {
+  auth: {
+    user_pool_id: "us-east-1_9tcHGi27T",
+    aws_region: "us-east-1",
+    user_pool_client_id: "55uecj5bes47d6ds301gqgf0er",
+    identity_pool_id: "us-east-1:b5de0bbb-c969-499d-b230-faff8c07cc5d"
+  },
+  data: {
+    url: "https://mv2jyv35enefvcolpnqlawk4uq.appsync-api.us-east-1.amazonaws.com/graphql",
+    aws_region: "us-east-1"
+  }
+};
